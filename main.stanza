@@ -9,7 +9,7 @@ defpackage main :
   import helpers
 
 ; Define the shape/size of the board
-val board-shape = RoundedRectangle(35.0, 20.0, 0.25)
+val board-shape = RoundedRectangle(30.0, 16.0, 0.25)
 
 ; Module to run as a design
 pcb-module my-design :
@@ -24,9 +24,12 @@ pcb-module my-design :
   inst top-header : pin-header(n-pins / 2, pitch = 25.4 * 0.05, padsize = pth-pad(0.25))
   inst bottom-header : pin-header(n-pins / 2, pitch = 25.4 * 0.05,  padsize = pth-pad(0.25))
 
-  val y = 7.0 * 0.05 * 25.4
-  place(top-header) at loc(0.0, y) on Top
-  place(bottom-header) at loc(0.0, y * -1.0) on Top
+  schematic-group(top-header) = top-header
+  schematic-group(bottom-header) = bottom-header
+
+  val y = 5.0 * 0.05 * 25.4
+  place(top-header) at loc(0.0, y, 90.0) on Top
+  place(bottom-header) at loc(0.0, y * -1.0, 90.0) on Top
 
   ; Pin mapping 
 
@@ -43,7 +46,7 @@ pcb-module my-design :
   for (t in pins(top-header), i in 0 to 22) do :
     net (t escape[i].p)
 
-  for (t in pins(bottom-header), i in 0 to 22) do :
+  for (t in pins(bottom-header), i in 0o to 22) do :
     net (t escape[i + 22].p)
 
 
@@ -58,7 +61,7 @@ pcb-module my-design :
 ;     [optional] vendors  - Strings or AuthorizedVendors (if not give default vendors will be used)
 ;     [optional] quantity - Minimum stock quantity the vendor should carry (if not give default quantity will be used)
 setup-design(
-  "jitx-design",
+  "breakout",
   ocdb/utils/defaults/default-board(ocdb/manufacturers/stackups/jlcpcb-jlc2313, board-shape)
   rules = ocdb/manufacturers/rules/jlcpcb-rules
 )
