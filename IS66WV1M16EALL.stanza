@@ -68,5 +68,8 @@ public pcb-component component :
     [ VDD | D[6]  E[1] | Left ]
     [ nWE| G[5] | Left ]
 
+  no-connect(self.NC[0])
+  no-connect(self.NC[1])
+
   make-box-symbol()
   assign-landpattern(lp-my-component)
