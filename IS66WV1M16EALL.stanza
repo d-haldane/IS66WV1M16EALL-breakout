@@ -1,0 +1,72 @@
+; When renaming the stanza package name below, also rename it in the folder stanza.proj
+; See docs.jitx.com for help
+#use-added-syntax(jitx)
+defpackage components/IS66WV1M16EALL:
+  import core
+  import collections
+  import jitx
+  import jitx/commands
+  import ocdb/utils/defaults
+  import ocdb/utils/landpatterns
+  import ocdb/utils/box-symbol
+  import ocdb/utils/bundles
+
+pcb-landpattern lp-my-component :
+  make-bga-landpattern(8, 6, 0.75, 0.35, tol(6.0, 0.15), tol(8.0, 0.15), FullMatrix())
+
+public pcb-component component :
+
+  mpn = "IS66WV1M16EALL"
+  manufacturer = "ISSI"
+
+  pin-properties :
+    [pin:Ref      | pads:Ref ... | side:Dir ]
+    [ A[0] | A[3] | Left ]
+    [ A[1] | A[4] | Left ]
+    [ A[10] | H[4] | Left ]
+    [ A[11] | H[5] | Left ]
+    [ A[12] | G[3] | Left ]
+    [ A[13] | G[4] | Left ]
+    [ A[14] | F[3] | Left ]
+    [ A[15] | F[4] | Left ]
+    [ A[16] | E[4] | Left ]
+    [ A[17] | D[3] | Left ]
+    [ A[18] | H[1] | Left ]
+    [ A[19] | G[2] | Left ]
+    [ A[2] | A[5] | Left ]
+    [ A[3] | B[3] | Left ]
+    [ A[4] | B[4] | Left ]
+    [ A[5] | C[3] | Left ]
+    [ A[6] | C[4] | Left ]
+    [ A[7] | D[4] | Left ]
+    [ A[8] | H[2] | Left ]
+    [ A[9] | H[3] | Left ]
+    [ CS1# | B[5] | Left ]
+    [ CS2 | A[6] | Left ]
+    [ GND | D[1]  E[6] | Left ]
+    [ Q0 | B[6] | Left ]
+    [ Q1 | C[5] | Left ]
+    [ Q10 | C[2] | Left ]
+    [ Q13 | F[2] | Left ]
+    [ Q14 | F[1] | Left ]
+    [ Q15 | G[1] | Left ]
+    [ Q3 | D[5] | Left ]
+    [ Q4 | E[5] | Left ]
+    [ Q5 | F[5] | Left ]
+    [ Q6 | F[6] | Left ]
+    [ Q7 | G[6] | Left ]
+    [ Q8 | B[1] | Left ]
+    [ Q9 | C[1] | Left ]
+    [ Q11 | D[2] | Left ]
+    [ Q12 | E[2] | Left ]
+    [ Q2 | C[6] | Left ]
+    [ nLB | A[1] | Left ]
+    [ NC[0] | E[3] | Left ]
+    [ NC[1] | H[6] | Left ]
+    [ nOE | A[2] | Left ]
+    [ nUB | B[2] | Left ]
+    [ VDD | D[6]  E[1] | Left ]
+    [ nWE| G[5] | Left ]
+
+  make-box-symbol()
+  assign-landpattern(lp-my-component)

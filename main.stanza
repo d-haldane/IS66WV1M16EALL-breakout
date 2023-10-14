@@ -5,24 +5,51 @@ defpackage main :
   import jitx
   import jitx/commands
   import ocdb/utils/generic-components
+  import ocdb/utils/landpatterns
   import helpers
 
 ; Define the shape/size of the board
-val board-shape = RoundedRectangle(30.0, 18.5, 0.25)
+val board-shape = RoundedRectangle(35.0, 20.0, 0.25)
 
 ; Module to run as a design
 pcb-module my-design :
-  ; define some pins/ports
-  pin gnd
-  pin power-5v
-  pin signal
 
-  ; Create a 10k resistor component
-  res-strap(power-5v, signal, 10.0e3)
 
-  ; Write the board version on silkscreen
-  inst version-label  : ocdb/artwork/board-text/version-silkscreen("Version 0.0")
-  place(version-label) at loc(0.0, height(board-shape) / 2.0 - 1.0) on Bottom
+  inst flash :  components/IS66WV1M16EALL/component
+  cap-strap(flash.VDD, flash.GND, 22.0e-6)
+
+
+  val n-pins = 6 * 8
+
+  inst top-header : pin-header(n-pins / 2 - 1 , pitch = 25.4 * 0.05, padsize = pth-pad(0.25))
+  inst bottom-header : pin-header(n-pins / 2 - 1, pitch = 25.4 * 0.05,  padsize = pth-pad(0.25))
+
+  val y = 7.0 * 0.05 * 25.4
+  place(top-header) at loc(0.0, y) on Top
+  place(bottom-header) at loc(0.0, y * -1.0) on Top
+
+  ; Pin mapping 
+
+  pcb-bundle breakout :
+    pin p 
+
+  for p in pins(flash) do :
+    supports breakout :
+      breakout.p => p
+    
+  require escape : breakout[46]
+
+  for (t in pins(top-header), i in 1 to 23) do :
+    net (t escape[i].p)
+
+  for (t in pins(bottom-header), i in 1 to 23) do :
+    net (t escape[i + 23].p)
+
+
+
+
+
+
 
 ; Set the design name     - a directory with this name will be generated under the "designs" directory
 ;     the board           - a Board object
@@ -32,6 +59,7 @@ pcb-module my-design :
 setup-design(
   "jitx-design",
   ocdb/utils/defaults/default-board(ocdb/manufacturers/stackups/jlcpcb-jlc2313, board-shape)
+  rules = ocdb/manufacturers/rules/jlcpcb-rules
 )
 
 ; Set the schematic sheet size
@@ -46,4 +74,3 @@ set-main-module(my-design)
 ; View the results
 view-board()
 view-schematic()
-view-design-explorer()
