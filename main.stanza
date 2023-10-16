@@ -9,7 +9,7 @@ defpackage main :
   import helpers
 
 ; Define the shape/size of the board
-val board-shape = RoundedRectangle(30.0, 16.0, 1.0)
+val board-shape = RoundedRectangle(15.24, 15.24, 0.5)
 
 ; Module to run as a design
 pcb-module my-design :
@@ -17,21 +17,27 @@ pcb-module my-design :
 
   inst flash :  components/IS66WV1M16EALL/component
   cap-strap(flash.VDD, flash.GND, 22.0e-6)
-  net gnd
+  net gnd (flash.GND)
 
+  val height-pins = 10
+  val width-pins = 12
+  val pitch = 25.4 * 0.05
+  val height-header-component = pin-header(height-pins, pitch = pitch, padsize = pth-pad(0.25))
+  val width-header-component = pin-header(width-pins, pitch = pitch, padsize = pth-pad(0.25))
 
-  val n-pins = 6 * 8 - 4
+  inst height-header : height-header-component[2]
+  inst width-header : width-header-component[2]
 
-  inst top-header : pin-header(n-pins / 2, pitch = 25.4 * 0.05, padsize = pth-pad(0.25))
-  inst bottom-header : pin-header(n-pins / 2, pitch = 25.4 * 0.05,  padsize = pth-pad(0.25))
+  schematic-group(height-header) = height-header
+  schematic-group(width-header) = width-header
 
-  schematic-group(top-header) = top-header
-  schematic-group(bottom-header) = bottom-header
+  val x = to-double(width-pins - 1) * pitch / 2.
+  val y = to-double(height-pins + 1) * pitch / 2.
 
-  val y = 5.0 * 0.05 * 25.4
-  place(top-header) at loc(0.0, y, 90.0) on Top
-  place(bottom-header) at loc(0.0, y * -1.0, 90.0) on Top
-
+  place(height-header[0]) at loc(x, 0.0) on Top
+  place(height-header[1]) at loc(x * -1.0, 0.0) on Top
+  place(width-header[0]) at loc(0.0, y, 90.0) on Top
+  place(width-header[1]) at loc(0.0, y * -1.0, 90.0) on Top
   ; Pin mapping 
 
   pcb-bundle breakout :
@@ -44,13 +50,13 @@ pcb-module my-design :
       
   require escape : breakout[44]
 
-  for (t in pins(top-header), i in 0 to 22) do :
-    net (t escape[i].p)
+  for j in 0 to 2 do :
+    for (t in pins(height-header[j]), i in (height-pins * j) to (height-pins * (1 + j))) do :
+      net (t escape[i].p)
 
-  for (t in pins(bottom-header), i in 0o to 22) do :
-    net (t escape[i + 22].p)
-
-
+  for j in 0 to 2 do :
+    for (w in pins(width-header[j]), i in (height-pins * 2 + width-pins * j) to (height-pins * 2 + width-pins * (1 + j))) do :
+      net (w escape[i].p)
 
   geom(gnd):
     copper-pour(LayerIndex(1), isolate = 0.1, rank = 1) = board-shape
@@ -63,7 +69,7 @@ pcb-module my-design :
 ;     [optional] vendors  - Strings or AuthorizedVendors (if not give default vendors will be used)
 ;     [optional] quantity - Minimum stock quantity the vendor should carry (if not give default quantity will be used)
 setup-design(
-  "minimal",
+  "two-layer",
   ocdb/utils/defaults/default-board(ocdb/manufacturers/stackups/jlcpcb-2-layer, board-shape)
   rules = ocdb/manufacturers/rules/jlcpcb-basic-rules
 )

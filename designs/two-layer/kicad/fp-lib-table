@@ -1,0 +1,4 @@
+(fp_lib_table
+  (version 7)
+  (lib (name two-layer)(type KiCad)(uri "$(KIPRJMOD)/two-layer.pretty")(options "")(descr ""))
+)
